@@ -24,13 +24,10 @@ public class ArrayStack<T extends Number> implements CustomStack<T> {
      * Creates a new ArrayStack with default capacity.
      */
     public ArrayStack() {
-        // TODO: Initialize the elements array with the DEFAULT_CAPACITY
-
-        // TODO: Set top to -1 (indicating an empty stack)
-
-        // TODO: Initialize operationCount to 0
-
-        // TODO: Assign a unique stackId by incrementing totalStacks
+        elements = new Object[DEFAULT_CAPACITY];
+        top = -1;
+        operationCount = 0;
+        stackId = ++totalStacks;
     }
 
     /**
@@ -39,13 +36,12 @@ public class ArrayStack<T extends Number> implements CustomStack<T> {
      */
     @Override
     public void push(T element) {
-        // TODO: Increment operationCount
-
-        // TODO: Check if the array is full (top == elements.length - 1)
-
-        // TODO: Add the element to the top of the stack
-
-        // TODO: Increment totalElements
+        operationCount++;
+        if (top == elements.length -1){
+            resize();
+        }
+        elements[++top] =element;
+        totalElements++;
     }
 
     /**
@@ -55,18 +51,14 @@ public class ArrayStack<T extends Number> implements CustomStack<T> {
     @SuppressWarnings("unchecked")
     @Override
     public T pop() {
-        // TODO: Increment operationCount
-
-        // TODO: Check if the stack is empty (isEmpty())
-
-        // TODO: Retrieve the top element
-
-        // TODO: Clear the reference in the array to help garbage collection
-
-        // TODO: Decrement totalElements
-
-        // TODO: Return the popped element
-        return null; // Placeholder return, replace with actual implementation
+        operationCount++;
+        if (isEmpty()){
+            return null;
+        }
+        T element = (T)elements[top];
+        elements[top--] = null;
+        totalElements--;
+        return element; 
     }
 
     /**
@@ -76,12 +68,11 @@ public class ArrayStack<T extends Number> implements CustomStack<T> {
     @SuppressWarnings("unchecked")
     @Override
     public T peek() {
-        // TODO: Increment operationCount
-
-        // TODO: Check if the stack is empty (isEmpty())
-
-        // TODO: Return the top element without removing it
-        return null; // Placeholder return, replace with actual implementation
+        operationCount++;
+        if (isEmpty()){
+            return null;
+        }
+        return (T)elements[top];
     }
 
     /**
@@ -90,10 +81,8 @@ public class ArrayStack<T extends Number> implements CustomStack<T> {
      */
     @Override
     public boolean isEmpty() {
-        // TODO: Increment operationCount
-
-        // TODO: Return true if the stack is empty (top == -1)
-        return false; // Placeholder return, replace with actual implementation
+        operationCount++;
+        return top == -1;
     }
 
     /**
@@ -102,23 +91,17 @@ public class ArrayStack<T extends Number> implements CustomStack<T> {
      */
     @Override
     public int size() {
-        // TODO: Increment operationCount
-
-        // TODO: Return the number of elements in the stack (top + 1)
-        return 0; // Placeholder return, replace with actual implementation
+        operationCount++;
+        return top + 1;
     }
 
-    /**
-     * Resizes the array when it becomes full.
-     */
+
+    // Resizes the array when it becomes full.
     private void resize() {
-        // TODO: Calculate the new capacity using GROWTH_FACTOR
-
-        // TODO: Create a new array with the new capacity
-
-        // TODO: Copy elements from the old array to the new array
-
-        // TODO: Update the elements reference to point to the new array
+        int newCapacity = (int)(elements.length * GROWTH_FACTOR);
+        Object[] newElements = new Object[newCapacity];
+        System.arraycopy(elements, 0, newElements, 0, elements.length);
+        elements = newElements;
     }
 
     /**
@@ -126,27 +109,34 @@ public class ArrayStack<T extends Number> implements CustomStack<T> {
      * Works only for numeric types.
      */
     public void addTopTwo() {
-        // TODO: Check if the stack has at least two elements (size() < 2)
+        if(size() <2){
+            throw new IllegalStateException("Stack has less than 2 elements");
+        }
+        T num1 = pop();
+        T num2 = pop();
 
-        // TODO: Pop the top two elements
+        Number result;
+        if (num1 instanceof Integer && num2 instanceof Integer){
+            result = num1.doubleValue() + num2.doubleValue();
+        }
+        else{
+            result = num1.doubleValue() + num2.doubleValue();
+        }
+        if (num1 instanceof Integer && num2 instanceof Integer){
+            push((T) Integer.valueOf(result.intValue())); 
+        }
+        else{
+            push((T) Double.valueOf(result.doubleValue()));
+        }
+        }
 
-        // TODO: Add the two numbers and determine the appropriate type for the result
 
-        // TODO: If the original elements were Integers, push the result as Integer
-
-        // TODO: Otherwise, treat the result as a Double
-    }
-
-    /**
-     * Gets statistics for this stack instance.
-     */
+    // Gets statistics for this stack instance.
     public String getStats() {
         return "Stack #" + stackId + ": Size=" + size() + ", Operations=" + operationCount;
     }
-
-    /**
-     * Gets statistics across all ArrayStack instances.
-     */
+ 
+    //Gets statistics across all ArrayStack instances.  
     public static String getGlobalStats() {
         return "Total stacks: " + totalStacks + ", Total elements: " + totalElements;
     }
